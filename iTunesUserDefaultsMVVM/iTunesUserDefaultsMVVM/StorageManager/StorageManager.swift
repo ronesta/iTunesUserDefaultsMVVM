@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class StorageManager {
+final class StorageManager: StorageManagerProtocol {
     private let historyKey = "searchHistory"
 
     func saveAlbums(_ albums: [Album], for searchTerm: String) {

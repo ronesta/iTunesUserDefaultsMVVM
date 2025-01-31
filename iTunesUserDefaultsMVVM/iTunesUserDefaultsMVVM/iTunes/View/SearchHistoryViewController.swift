@@ -13,8 +13,11 @@ final class SearchHistoryViewController: UIViewController {
         tableView.separatorStyle = .singleLine
         return tableView
     }()
+
     private let id = "cell"
-    private var viewModel = SearchHistoryViewModel()
+
+    var viewModel: SearchHistoryViewModelProtocol?
+    var tableViewDataSource: SearchHistoryDataSourceProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +28,7 @@ final class SearchHistoryViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.updateSearchHistory()
+        viewModel?.updateSearchHistory()
     }
 
     private func setupNavigationBar() {
@@ -36,7 +39,7 @@ final class SearchHistoryViewController: UIViewController {
         view.addSubview(tableView)
         view.backgroundColor = .systemGray6
 
-        tableView.dataSource = self
+        tableView.dataSource = tableViewDataSource
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: id)
 
@@ -46,22 +49,9 @@ final class SearchHistoryViewController: UIViewController {
     }
 
     private func bindViewModel() {
-        viewModel.searchHistory.bind { [weak self] _ in
+        viewModel?.searchHistory.bind { [weak self] _ in
             self?.tableView.reloadData()
         }
-    }
-}
-
-// MARK: - UITableViewDataSource
-extension SearchHistoryViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.getSearchHistoryCount()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath)
-        cell.textLabel?.text = viewModel.getSearchHistory(at: indexPath.row)
-        return cell
     }
 }
 
@@ -69,8 +59,10 @@ extension SearchHistoryViewController: UITableViewDataSource {
 extension SearchHistoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let selectedTerm = viewModel.getSearchHistory(at: indexPath.row)
-        performSearch(for: selectedTerm)
+        
+        if let selectedTerm = viewModel?.getSearchHistory(at: indexPath.row) {
+            performSearch(for: selectedTerm)
+        }
     }
 
     func performSearch(for term: String) {

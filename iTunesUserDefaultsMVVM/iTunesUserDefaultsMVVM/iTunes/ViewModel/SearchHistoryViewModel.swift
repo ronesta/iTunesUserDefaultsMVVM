@@ -7,18 +7,19 @@
 
 import Foundation
 
-final class SearchHistoryViewModel {
-    private let storageManager = StorageManager()
+final class SearchHistoryViewModel: SearchHistoryViewModelProtocol {
+    var storageManager: StorageManagerProtocol?
 
-    private(set) var searchHistory: Observable<[String]> = Observable([])
+    var searchHistory: Observable<[String]> = Observable([])
 
-    init() {
+    init(storageManager: StorageManagerProtocol?) {
+        self.storageManager = storageManager
         updateSearchHistory()
     }
 
     func updateSearchHistory() {
-        let history = storageManager.getSearchHistory()
-        searchHistory.value = history
+        let history = storageManager?.getSearchHistory()
+        searchHistory.value = history ?? []
     }
 
     func getSearchHistoryCount() -> Int {

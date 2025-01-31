@@ -7,28 +7,35 @@
 
 import Foundation
 
-final class SearchViewModel {
+final class SearchViewModel: SearchViewModelProtocol {
     var albums: Observable<[Album]> = Observable([])
     
-    private let networkManager = NetworkManager()
-    private let storageManager = StorageManager()
+    var networkManager: NetworkManagerProtocol?
+    var storageManager: StorageManagerProtocol?
+
+    init(networkManager: NetworkManagerProtocol? = nil,
+         storageManager: StorageManagerProtocol? = nil
+    ) {
+        self.networkManager = networkManager
+        self.storageManager = storageManager
+    }
 
     var searchHistory: [String] {
-        return storageManager.getSearchHistory()
+        return storageManager?.getSearchHistory() ?? []
     }
 
     func searchAlbums(with term: String) {
-        if let savedAlbums = storageManager.loadAlbums(for: term) {
+        if let savedAlbums = storageManager?.loadAlbums(for: term) {
             albums.value = savedAlbums
             return
         }
 
-        networkManager.fetchAlbums(albumName: term) { [weak self] result in
+        networkManager?.loadAlbums(albumName: term) { [weak self] result in
             switch result {
             case .success(let albums):
                 DispatchQueue.main.async {
                     self?.albums.value = albums.sorted { $0.collectionName < $1.collectionName }
-                    self?.storageManager.saveAlbums(albums, for: term)
+                    self?.storageManager?.saveAlbums(albums, for: term)
                     print("Successfully loaded \(albums.count) albums.")
                 }
             case .failure(let error):

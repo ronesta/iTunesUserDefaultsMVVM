@@ -4,5 +4,15 @@
 //
 //  Created by Ибрагим Габибли on 31.01.2025.
 //
+import UIKit
 
-import Foundation
+protocol AlbumViewModelProtocol {
+    var albumImage: Observable<UIImage?> { get }
+    var albumName: Observable<String?> { get }
+    var artistName: Observable<String?> { get }
+    var collectionPrice: Observable<String?> { get }
+
+    func fetchAlbumImage(completion: @escaping (UIImage?) -> Void)
+    func getAlbumTitle() -> String
+    func getAlbumPrice() -> String
+}

@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 final class AlbumViewController: UIViewController {
-    var viewModel: AlbumViewModel!
+    var viewModel: AlbumViewModelProtocol?
 
     private let albumImageView: UIImageView = {
         let image = UIImageView()
@@ -80,19 +80,19 @@ final class AlbumViewController: UIViewController {
     }
 
     private func bindViewModel() {
-        viewModel.albumImage.bind { [weak self] image in
+        viewModel?.albumImage.bind { [weak self] image in
             self?.albumImageView.image = image
         }
 
-        viewModel.albumName.bind { [weak self] name in
+        viewModel?.albumName.bind { [weak self] name in
             self?.albumNameLabel.text = name
         }
 
-        viewModel.artistName.bind { [weak self] name in
+        viewModel?.artistName.bind { [weak self] name in
             self?.artistNameLabel.text = name
         }
 
-        viewModel.collectionPrice.bind { [weak self] price in
+        viewModel?.collectionPrice.bind { [weak self] price in
             self?.collectionPriceLabel.text = price
         }
     }

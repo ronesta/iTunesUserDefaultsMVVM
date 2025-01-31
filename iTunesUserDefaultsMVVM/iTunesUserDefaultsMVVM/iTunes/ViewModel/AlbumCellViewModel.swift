@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct AlbumCellViewModel {
+struct AlbumCellViewModel: AlbumCellViewModelProtocol {
     let collectionName: String
     let artistName: String
     let albumImage: UIImage?

@@ -17,7 +17,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 
+        let storageManager = StorageManager()
+        let networkManager = NetworkManager(storageManager: storageManager)
+
         let searchViewController = SearchViewController()
+        let searchCollectionViewDataSource = SearchCollectionViewDataSource()
+        let searchViewModel = SearchViewModel(networkManager: networkManager,
+                                              storageManager: storageManager)
+
+        searchViewController.viewModel = searchViewModel
+        searchViewController.storageManager = storageManager
+        searchViewController.collectionViewDataSource = searchCollectionViewDataSource
+
+        searchCollectionViewDataSource.viewModel = searchViewModel
+        searchCollectionViewDataSource.networkManager = networkManager
+
+        let searchHistoryViewController = SearchHistoryViewController()
+        let earchHistoryTableViewDataSource = SearchHistoryTableViewDataSource()
+        let searchHistoryModel = SearchHistoryViewModel(storageManager: storageManager)
+
+        searchHistoryViewController.viewModel = searchHistoryModel
+        searchHistoryViewController.tableViewDataSource = earchHistoryTableViewDataSource
+
+        earchHistoryTableViewDataSource.viewModel = searchHistoryModel
+
         let searchNavigationController = UINavigationController(rootViewController: searchViewController)
         let searchTabBarItem = UITabBarItem(title: "Search",
                                             image: UIImage(systemName: "magnifyingglass"),

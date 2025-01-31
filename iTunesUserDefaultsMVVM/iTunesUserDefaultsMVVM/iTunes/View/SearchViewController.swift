@@ -36,9 +36,9 @@ final class SearchViewController: UIViewController {
         return collectionView
     }()
 
-    var viewModel = SearchViewModel()
-    var networkManager = NetworkManager()
-    var storageManager = StorageManager()
+    var viewModel: SearchViewModelProtocol?
+    var storageManager: StorageManagerProtocol?
+    var collectionViewDataSource: SearchDataSourceProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,7 +53,7 @@ final class SearchViewController: UIViewController {
         navigationItem.titleView = searchBar
 
         searchBar.delegate = self
-        collectionView.dataSource = self
+        collectionView.dataSource = collectionViewDataSource
         collectionView.delegate = self
 
         collectionView.snp.makeConstraints { make in
@@ -64,7 +64,7 @@ final class SearchViewController: UIViewController {
     }
 
     private func setupBindings() {
-        viewModel.albums.bind { [weak self] _ in
+        viewModel?.albums.bind { [weak self] _ in
             DispatchQueue.main.async {
                 self?.collectionView.reloadData()
             }
@@ -72,44 +72,15 @@ final class SearchViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionViewDataSource
-extension SearchViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.getAlbumsCount()
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: AlbumCollectionViewCell.id,
-            for: indexPath)
-                as? AlbumCollectionViewCell else {
-            return UICollectionViewCell()
-        }
-
-        let album = viewModel.getAlbum(at: indexPath.item)
-        let urlString = album.artworkUrl100
-
-        networkManager.loadImage(from: urlString) { loadedImage in
-            DispatchQueue.main.async {
-                guard let cell = collectionView.cellForItem(at: indexPath) as? AlbumCollectionViewCell else {
-                    return
-                }
-
-                let viewModel = AlbumCellViewModel(album: album, image: loadedImage)
-                cell.configure(with: viewModel)
-            }
-        }
-        return cell
-    }
-}
-
 // MARK: - UICollectionViewDelegate
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
+        guard let album = viewModel?.getAlbum(at: indexPath.item) else {
+            return
+        }
+
         let albumViewController = AlbumViewController()
-        let album = viewModel.getAlbum(at: indexPath.item)
         let albumViewModel = AlbumViewModel(album: album)
         albumViewController.viewModel = albumViewModel
         navigationController?.pushViewController(albumViewController, animated: true)
@@ -123,7 +94,7 @@ extension SearchViewController: UISearchBarDelegate {
         guard let searchTerm = searchBar.text, !searchTerm.isEmpty else {
             return
         }
-        storageManager.saveSearchTerm(searchTerm)
-        viewModel.searchAlbums(with: searchTerm)
+        storageManager?.saveSearchTerm(searchTerm)
+        viewModel?.searchAlbums(with: searchTerm)
     }
 }
