@@ -9,9 +9,7 @@ import Foundation
 import UIKit
 
 final class StorageManager {
-    static let shared = StorageManager()
     private let historyKey = "searchHistory"
-    private init() {}
 
     func saveAlbums(_ albums: [Album], for searchTerm: String) {
         do {

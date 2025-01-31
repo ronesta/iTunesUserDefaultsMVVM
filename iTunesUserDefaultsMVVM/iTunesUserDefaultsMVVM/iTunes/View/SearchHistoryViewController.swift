@@ -14,17 +14,18 @@ final class SearchHistoryViewController: UIViewController {
         return tableView
     }()
     private let id = "cell"
-    var searchHistory = [String]()
+    private var viewModel = SearchHistoryViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupViews()
+        bindViewModel()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateSearchHistory()
+        viewModel.updateSearchHistory()
     }
 
     private func setupNavigationBar() {
@@ -44,35 +45,40 @@ final class SearchHistoryViewController: UIViewController {
         }
     }
 
-    func updateSearchHistory() {
-        searchHistory = StorageManager.shared.getSearchHistory()
-        self.tableView.reloadData()
+    private func bindViewModel() {
+        viewModel.searchHistory.bind { [weak self] _ in
+            self?.tableView.reloadData()
+        }
     }
 }
 
+// MARK: - UITableViewDataSource
 extension SearchHistoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        searchHistory.count
+        viewModel.getSearchHistoryCount()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath)
-        cell.textLabel?.text = searchHistory[indexPath.row]
+        cell.textLabel?.text = viewModel.getSearchHistory(at: indexPath.row)
         return cell
     }
 }
 
+// MARK: - UITableViewDelegate
 extension SearchHistoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let selectedTerm = searchHistory[indexPath.row]
+        let selectedTerm = viewModel.getSearchHistory(at: indexPath.row)
         performSearch(for: selectedTerm)
     }
 
     func performSearch(for term: String) {
+        let searchViewModel = SearchViewModel()
         let searchViewController = SearchViewController()
+        searchViewController.viewModel = searchViewModel
+        searchViewModel.searchAlbums(with: term)
         searchViewController.searchBar.isHidden = true
-        searchViewController.searchAlbums(with: term)
         navigationController?.pushViewController(searchViewController, animated: true)
     }
 }

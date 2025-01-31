@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 final class AlbumViewController: UIViewController {
-    var album: Album?
+    var viewModel: AlbumViewModel!
 
     private let albumImageView: UIImageView = {
         let image = UIImageView()
@@ -45,7 +45,7 @@ final class AlbumViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        setupAlbum()
+        bindViewModel()
     }
 
     private func setupViews() {
@@ -79,20 +79,21 @@ final class AlbumViewController: UIViewController {
         }
     }
 
-    private func setupAlbum() {
-        guard let album else {
-            return
+    private func bindViewModel() {
+        viewModel.albumImage.bind { [weak self] image in
+            self?.albumImageView.image = image
         }
 
-        let urlString = album.artworkUrl100
-        NetworkManager.shared.loadImage(from: urlString) { [weak self] loadedImage in
-            DispatchQueue.main.async {
-                self?.albumImageView.image = loadedImage
-            }
+        viewModel.albumName.bind { [weak self] name in
+            self?.albumNameLabel.text = name
         }
 
-        albumNameLabel.text = album.collectionName
-        artistNameLabel.text = album.artistName
-        collectionPriceLabel.text = "\(album.collectionPrice) $"
+        viewModel.artistName.bind { [weak self] name in
+            self?.artistNameLabel.text = name
+        }
+
+        viewModel.collectionPrice.bind { [weak self] price in
+            self?.collectionPriceLabel.text = price
+        }
     }
 }

@@ -9,11 +9,10 @@ import Foundation
 import UIKit
 
 final class NetworkManager {
-    static let shared = NetworkManager()
     var dataCounter = 1
     var imageCounter = 1
 
-    private init() {}
+    private let storageManager = StorageManager()
 
     func fetchAlbums(albumName: String, completion: @escaping (Result<[Album], Error>) -> Void) {
         let baseURL = "https://itunes.apple.com/search"
@@ -61,7 +60,7 @@ final class NetworkManager {
 
     func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
 
-        if let imageData = StorageManager.shared.loadImage(key: urlString),
+        if let imageData = storageManager.loadImage(key: urlString),
            let image = UIImage(data: imageData) {
             completion(image)
             return
@@ -72,7 +71,7 @@ final class NetworkManager {
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, _, error in
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
             if let error {
                 print("Error: \(error.localizedDescription)")
                 DispatchQueue.main.async {
@@ -83,11 +82,11 @@ final class NetworkManager {
 
             if let data,
                let image = UIImage(data: data) {
-                StorageManager.shared.saveImage(data, key: urlString)
+                self?.storageManager.saveImage(data, key: urlString)
                 DispatchQueue.main.async {
                     completion(image)
-                    print("Load image \(self.imageCounter)")
-                    self.imageCounter += 1
+                    print("Load image \(self?.imageCounter)")
+                    self?.imageCounter += 1
                 }
             } else {
                 DispatchQueue.main.async {
