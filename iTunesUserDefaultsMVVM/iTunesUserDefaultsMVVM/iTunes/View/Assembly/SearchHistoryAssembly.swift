@@ -10,19 +10,16 @@ import UIKit
 
 struct SearchHistoryAssembly {
     func build() -> UIViewController {
-        // Создаем необходимые менеджеры
         let storageManager = StorageManager()
 
-        // Создаем ViewModel и DataSource
         let searchHistoryModel = SearchHistoryViewModel(storageManager: storageManager)
+
         let searchHistoryTableViewDataSource = SearchHistoryTableViewDataSource(viewModel: searchHistoryModel)
 
-        // Создаем ViewController
         let searchHistoryViewController = SearchHistoryViewController()
         searchHistoryViewController.viewModel = searchHistoryModel
         searchHistoryViewController.tableViewDataSource = searchHistoryTableViewDataSource
 
-        // Возвращаем конфигурированный UINavigationController
         let historyNavigationController = UINavigationController(rootViewController: searchHistoryViewController)
         let historyTabBarItem = UITabBarItem(title: "History",
                                              image: UIImage(systemName: "clock"),

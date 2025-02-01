@@ -9,12 +9,12 @@ import Foundation
 
 final class SearchViewModel: SearchViewModelProtocol {
     var albums: Observable<[Album]> = Observable([])
-    
+
     var networkManager: NetworkManagerProtocol?
     var storageManager: StorageManagerProtocol?
 
-    init(networkManager: NetworkManagerProtocol,
-         storageManager: StorageManagerProtocol
+    init(networkManager: NetworkManagerProtocol?,
+         storageManager: StorageManagerProtocol?
     ) {
         self.networkManager = networkManager
         self.storageManager = storageManager

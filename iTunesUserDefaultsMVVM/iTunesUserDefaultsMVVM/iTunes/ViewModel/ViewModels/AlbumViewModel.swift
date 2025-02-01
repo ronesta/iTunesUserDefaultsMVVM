@@ -42,12 +42,4 @@ final class AlbumViewModel: AlbumViewModelProtocol {
     func fetchAlbumImage(completion: @escaping (UIImage?) -> Void) {
         networkManager?.loadImage(from: album.artworkUrl100, completion: completion)
     }
-
-    func getAlbumTitle() -> String {
-        return album.collectionName
-    }
-
-    func getAlbumPrice() -> String {
-        return "\(album.collectionPrice)"
-    }
 }

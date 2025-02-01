@@ -12,11 +12,10 @@ struct AlbumAssembly {
     func build(with album: Album) -> UIViewController {
         let storageManager = StorageManager()
         let networkManager = NetworkManager(storageManager: storageManager)
-        
+
         let albumViewModel = AlbumViewModel(networkManager: networkManager,
                                             album: album
         )
-
         let albumViewController = AlbumViewController(viewModel: albumViewModel)
 
         return albumViewController

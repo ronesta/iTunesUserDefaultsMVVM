@@ -14,7 +14,7 @@ final class NetworkManager: NetworkManagerProtocol {
 
     private var storageManager: StorageManagerProtocol?
 
-    init(storageManager: StorageManagerProtocol) {
+    init(storageManager: StorageManagerProtocol?) {
         self.storageManager = storageManager
     }
 

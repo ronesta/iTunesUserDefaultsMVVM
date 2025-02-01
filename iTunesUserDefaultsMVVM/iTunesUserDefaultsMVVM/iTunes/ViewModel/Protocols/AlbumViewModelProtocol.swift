@@ -13,6 +13,4 @@ protocol AlbumViewModelProtocol {
     var collectionPrice: Observable<String?> { get }
 
     func fetchAlbumImage(completion: @escaping (UIImage?) -> Void)
-    func getAlbumTitle() -> String
-    func getAlbumPrice() -> String
 }

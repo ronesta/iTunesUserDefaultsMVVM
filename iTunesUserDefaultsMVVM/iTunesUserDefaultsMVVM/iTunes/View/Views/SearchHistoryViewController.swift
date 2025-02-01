@@ -59,7 +59,7 @@ final class SearchHistoryViewController: UIViewController {
 extension SearchHistoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
+
         if let selectedTerm = viewModel?.getSearchHistory(at: indexPath.row) {
             performSearch(for: selectedTerm)
         }
