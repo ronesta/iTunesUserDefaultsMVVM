@@ -13,8 +13,8 @@ final class SearchViewModel: SearchViewModelProtocol {
     var networkManager: NetworkManagerProtocol?
     var storageManager: StorageManagerProtocol?
 
-    init(networkManager: NetworkManagerProtocol? = nil,
-         storageManager: StorageManagerProtocol? = nil
+    init(networkManager: NetworkManagerProtocol,
+         storageManager: StorageManagerProtocol
     ) {
         self.networkManager = networkManager
         self.storageManager = storageManager

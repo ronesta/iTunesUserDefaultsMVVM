@@ -18,7 +18,10 @@ final class AlbumViewModel: AlbumViewModelProtocol {
 
     private var album: Album
 
-    init(album: Album) {
+    init(networkManager: NetworkManagerProtocol,
+         album: Album
+    ) {
+        self.networkManager = networkManager
         self.album = album
         setupBindings()
     }

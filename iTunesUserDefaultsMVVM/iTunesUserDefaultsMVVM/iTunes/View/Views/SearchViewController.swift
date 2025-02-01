@@ -80,9 +80,8 @@ extension SearchViewController: UICollectionViewDelegate {
             return
         }
 
-        let albumViewController = AlbumViewController()
-        let albumViewModel = AlbumViewModel(album: album)
-        albumViewController.viewModel = albumViewModel
+        let albumViewController = AlbumAssembly().build(with: album)
+
         navigationController?.pushViewController(albumViewController, animated: true)
     }
 }

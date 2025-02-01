@@ -75,7 +75,7 @@ final class NetworkManager: NetworkManagerProtocol {
             return
         }
 
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+        URLSession.shared.dataTask(with: url) { data, _, error in
             if let error {
                 print("Error: \(error.localizedDescription)")
                 DispatchQueue.main.async {
@@ -86,11 +86,11 @@ final class NetworkManager: NetworkManagerProtocol {
 
             if let data,
                let image = UIImage(data: data) {
-                self?.storageManager?.saveImage(data, key: urlString)
+                self.storageManager?.saveImage(data, key: urlString)
                 DispatchQueue.main.async {
                     completion(image)
-                    print("Load image \(self?.imageCounter)")
-                    self?.imageCounter += 1
+                    print("Load image \(self.imageCounter)")
+                    self.imageCounter += 1
                 }
             } else {
                 DispatchQueue.main.async {

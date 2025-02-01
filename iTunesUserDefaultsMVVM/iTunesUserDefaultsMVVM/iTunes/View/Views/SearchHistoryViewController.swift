@@ -66,11 +66,13 @@ extension SearchHistoryViewController: UITableViewDelegate {
     }
 
     func performSearch(for term: String) {
-        let searchViewModel = SearchViewModel()
-        let searchViewController = SearchViewController()
-        searchViewController.viewModel = searchViewModel
-        searchViewModel.searchAlbums(with: term)
-        searchViewController.searchBar.isHidden = true
-        navigationController?.pushViewController(searchViewController, animated: true)
+        guard let searchViewController = SearchAssembly().build() as? UINavigationController,
+              let rootViewController = searchViewController.viewControllers.first as? SearchViewController else {
+            return
+        }
+
+        rootViewController.searchBar.isHidden = true
+        rootViewController.viewModel?.searchAlbums(with: term)
+        navigationController?.pushViewController(rootViewController, animated: true)
     }
 }

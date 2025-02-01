@@ -12,6 +12,13 @@ final class SearchCollectionViewDataSource: NSObject, SearchDataSourceProtocol {
     var viewModel: SearchViewModelProtocol?
     var networkManager: NetworkManagerProtocol?
 
+    init(viewModel: SearchViewModelProtocol?,
+         networkManager: NetworkManagerProtocol?
+    ) {
+        self.viewModel = viewModel
+        self.networkManager = networkManager
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel?.getAlbumsCount() ?? 0
     }

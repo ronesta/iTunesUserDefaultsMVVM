@@ -11,6 +11,10 @@ import UIKit
 final class SearchHistoryTableViewDataSource: NSObject, SearchHistoryDataSourceProtocol {
     var viewModel: SearchHistoryViewModelProtocol?
 
+    init(viewModel: SearchHistoryViewModelProtocol?) {
+        self.viewModel = viewModel
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel?.getSearchHistoryCount() ?? 0
     }
