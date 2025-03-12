@@ -8,24 +8,26 @@
 import Foundation
 import UIKit
 
-struct SearchAssembly {
+final class SearchAssembly {
     func build() -> UIViewController {
         let storageManager = StorageManager()
-        let networkManager = NetworkManager(storageManager: storageManager)
+        let iTunesService = ITunesService()
+        let imageLoader = ImageLoader(storageManager: storageManager)
 
-        let searchViewModel = SearchViewModel(
-            networkManager: networkManager,
+        let viewModel = SearchViewModel(
+            iTunesService: iTunesService,
             storageManager: storageManager
         )
-        let searchCollectionViewDataSource = SearchCollectionViewDataSource(
-            viewModel: searchViewModel,
-            networkManager: networkManager
+
+        let collectionViewDataSource = SearchCollectionViewDataSource(
+            viewModel: viewModel,
+            imageLoader: imageLoader
         )
 
-        let searchViewController = SearchViewController()
-        searchViewController.viewModel = searchViewModel
-        searchViewController.storageManager = storageManager
-        searchViewController.collectionViewDataSource = searchCollectionViewDataSource
+        let searchViewController = SearchViewController(viewModel: viewModel,
+                                                        storageManager: storageManager,
+                                                        collectionViewDataSource: collectionViewDataSource
+        )
 
         let searchNavigationController = UINavigationController(rootViewController: searchViewController)
         let searchTabBarItem = UITabBarItem(title: "Search",

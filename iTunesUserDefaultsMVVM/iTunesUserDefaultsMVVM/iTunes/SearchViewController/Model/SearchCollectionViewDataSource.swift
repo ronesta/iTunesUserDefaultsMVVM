@@ -9,18 +9,18 @@ import Foundation
 import UIKit
 
 final class SearchCollectionViewDataSource: NSObject, SearchDataSourceProtocol {
-    var viewModel: SearchViewModelProtocol?
-    var networkManager: NetworkManagerProtocol?
+    private let viewModel: SearchViewModelProtocol
+    private let imageLoader: ImageLoaderProtocol
 
-    init(viewModel: SearchViewModelProtocol?,
-         networkManager: NetworkManagerProtocol?
+    init(viewModel: SearchViewModelProtocol,
+         imageLoader: ImageLoaderProtocol
     ) {
         self.viewModel = viewModel
-        self.networkManager = networkManager
+        self.imageLoader = imageLoader
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel?.getAlbumsCount() ?? 0
+        viewModel.getAlbumsCount()
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -32,13 +32,10 @@ final class SearchCollectionViewDataSource: NSObject, SearchDataSourceProtocol {
             return UICollectionViewCell()
         }
 
-        guard let album = viewModel?.getAlbum(at: indexPath.item) else {
-            return UICollectionViewCell()
-        }
-
+        let album = viewModel.getAlbum(at: indexPath.item)
         let urlString = album.artworkUrl100
 
-        networkManager?.loadImage(from: urlString) { loadedImage in
+        imageLoader.loadImage(from: urlString) { loadedImage in
             DispatchQueue.main.async {
                 guard let cell = collectionView.cellForItem(at: indexPath) as? AlbumCollectionViewCell else {
                     return

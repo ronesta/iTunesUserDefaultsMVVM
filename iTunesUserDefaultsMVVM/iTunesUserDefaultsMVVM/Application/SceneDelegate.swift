@@ -17,14 +17,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 
-        let searchNavigationController = SearchAssembly().build()
-        let historyNavigationController = SearchHistoryAssembly().build()
+        // MARK: - viewControllers
+        let searchAssembly = SearchAssembly()
+        let searchHistoryAssembly = SearchHistoryAssembly()
 
+        let searchViewController = searchAssembly.build()
+        let searchHistoryViewController = searchHistoryAssembly.build()
+
+        // MARK: - UITabBarController
         let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [searchNavigationController, historyNavigationController]
-
+        tabBarController.viewControllers = [searchViewController, searchHistoryViewController]
         tabBarController.tabBar.barTintColor = .white
 
+        // MARK: - UIWindow
         window.rootViewController = tabBarController
         self.window = window
         window.makeKeyAndVisible()

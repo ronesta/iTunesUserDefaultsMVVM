@@ -9,19 +9,19 @@ import Foundation
 import UIKit
 
 final class AlbumViewModel: AlbumViewModelProtocol {
-    var networkManager: NetworkManagerProtocol?
+    private let imageLoader: ImageLoaderProtocol
+
+    private var album: Album
 
     let albumImage: Observable<UIImage?> = Observable(nil)
     let albumName: Observable<String?> = Observable(nil)
     let artistName: Observable<String?> = Observable(nil)
     let collectionPrice: Observable<String?> = Observable(nil)
 
-    private var album: Album
-
-    init(networkManager: NetworkManagerProtocol,
+    init(imageLoader: ImageLoaderProtocol,
          album: Album
     ) {
-        self.networkManager = networkManager
+        self.imageLoader = imageLoader
         self.album = album
         setupBindings()
     }
@@ -32,7 +32,7 @@ final class AlbumViewModel: AlbumViewModelProtocol {
         collectionPrice.value = "\(album.collectionPrice) $"
 
         let urlString = album.artworkUrl100
-        networkManager?.loadImage(from: urlString) { [weak self] loadedImage in
+        imageLoader.loadImage(from: urlString) { [weak self] loadedImage in
             DispatchQueue.main.async {
                 self?.albumImage.value = loadedImage
             }
@@ -40,6 +40,6 @@ final class AlbumViewModel: AlbumViewModelProtocol {
     }
 
     func fetchAlbumImage(completion: @escaping (UIImage?) -> Void) {
-        networkManager?.loadImage(from: album.artworkUrl100, completion: completion)
+        imageLoader.loadImage(from: album.artworkUrl100, completion: completion)
     }
 }

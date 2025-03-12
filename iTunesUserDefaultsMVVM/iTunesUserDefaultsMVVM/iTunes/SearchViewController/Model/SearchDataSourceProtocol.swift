@@ -9,6 +9,5 @@ import Foundation
 import UIKit
 
 protocol SearchDataSourceProtocol: AnyObject, UICollectionViewDataSource {
-    var viewModel: SearchViewModelProtocol? { get set }
-    var networkManager: NetworkManagerProtocol? { get set }
+
 }

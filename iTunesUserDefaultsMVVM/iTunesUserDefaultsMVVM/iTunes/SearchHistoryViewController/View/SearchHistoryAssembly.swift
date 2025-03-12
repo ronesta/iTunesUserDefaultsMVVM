@@ -8,17 +8,18 @@
 import Foundation
 import UIKit
 
-struct SearchHistoryAssembly {
+final class SearchHistoryAssembly {
     func build() -> UIViewController {
         let storageManager = StorageManager()
 
-        let searchHistoryModel = SearchHistoryViewModel(storageManager: storageManager)
+        let viewModel = SearchHistoryViewModel(storageManager: storageManager)
 
-        let searchHistoryTableViewDataSource = SearchHistoryTableViewDataSource(viewModel: searchHistoryModel)
+        let tableViewDataSource = SearchHistoryTableViewDataSource(viewModel: viewModel)
 
-        let searchHistoryViewController = SearchHistoryViewController()
-        searchHistoryViewController.viewModel = searchHistoryModel
-        searchHistoryViewController.tableViewDataSource = searchHistoryTableViewDataSource
+        let searchHistoryViewController = SearchHistoryViewController(
+            viewModel: viewModel,
+            tableViewDataSource: tableViewDataSource
+        )
 
         let historyNavigationController = UINavigationController(rootViewController: searchHistoryViewController)
         let historyTabBarItem = UITabBarItem(title: "History",

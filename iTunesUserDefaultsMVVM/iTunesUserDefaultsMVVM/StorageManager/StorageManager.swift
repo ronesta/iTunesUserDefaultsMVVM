@@ -20,8 +20,21 @@ final class StorageManager: StorageManagerProtocol {
         }
     }
 
+    func loadAlbums(for searchTerm: String) -> [Album]? {
+        guard let data = UserDefaults.standard.data(forKey: searchTerm),
+              let albums = try? JSONDecoder().decode([Album].self, from: data) else {
+            return nil
+        }
+
+        return albums
+    }
+
     func saveImage(_ image: Data, key: String) {
         UserDefaults.standard.set(image, forKey: key)
+    }
+
+    func loadImage(key: String) -> Data? {
+        return UserDefaults.standard.data(forKey: key)
     }
 
     func saveSearchTerm(_ term: String) {
@@ -30,24 +43,6 @@ final class StorageManager: StorageManagerProtocol {
             history.insert(term, at: 0)
             UserDefaults.standard.set(history, forKey: historyKey)
         }
-    }
-
-    func loadAlbums(for searchTerm: String) -> [Album]? {
-        if let data = UserDefaults.standard.data(forKey: searchTerm) {
-            do {
-                let albums = try JSONDecoder().decode([Album].self, from: data)
-                return albums
-            } catch {
-                print("Failed to encode: \(error)")
-                return nil
-            }
-        } else {
-            return nil
-        }
-    }
-
-    func loadImage(key: String) -> Data? {
-        return UserDefaults.standard.data(forKey: key)
     }
 
     func getSearchHistory() -> [String] {

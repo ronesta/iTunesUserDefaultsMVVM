@@ -9,5 +9,4 @@ import Foundation
 import UIKit
 
 protocol SearchHistoryDataSourceProtocol: AnyObject, UITableViewDataSource {
-    var viewModel: SearchHistoryViewModelProtocol? { get set }
 }

@@ -8,14 +8,15 @@
 import Foundation
 import UIKit
 
-struct AlbumAssembly {
+final class AlbumAssembly {
     func build(with album: Album) -> UIViewController {
         let storageManager = StorageManager()
-        let networkManager = NetworkManager(storageManager: storageManager)
+        let imageLoader = ImageLoader(storageManager: storageManager)
 
-        let albumViewModel = AlbumViewModel(networkManager: networkManager,
+        let albumViewModel = AlbumViewModel(imageLoader: imageLoader,
                                             album: album
         )
+
         let albumViewController = AlbumViewController(viewModel: albumViewModel)
 
         return albumViewController

@@ -36,9 +36,23 @@ final class SearchViewController: UIViewController {
         return collectionView
     }()
 
-    var viewModel: SearchViewModelProtocol?
-    var storageManager: StorageManagerProtocol?
-    var collectionViewDataSource: SearchDataSourceProtocol?
+    let viewModel: SearchViewModelProtocol
+    private let storageManager: StorageManagerProtocol
+    private let collectionViewDataSource: SearchDataSourceProtocol
+
+    init(viewModel: SearchViewModelProtocol,
+         storageManager: StorageManagerProtocol,
+         collectionViewDataSource: SearchDataSourceProtocol
+    ) {
+        self.viewModel = viewModel
+        self.storageManager = storageManager
+        self.collectionViewDataSource = collectionViewDataSource
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,7 +78,7 @@ final class SearchViewController: UIViewController {
     }
 
     private func setupBindings() {
-        viewModel?.albums.bind { [weak self] _ in
+        viewModel.albums.bind { [weak self] _ in
             DispatchQueue.main.async {
                 self?.collectionView.reloadData()
             }
@@ -76,11 +90,10 @@ final class SearchViewController: UIViewController {
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
-        guard let album = viewModel?.getAlbum(at: indexPath.item) else {
-            return
-        }
+        let album = viewModel.getAlbum(at: indexPath.item)
+        let albumAssembly = AlbumAssembly()
 
-        let albumViewController = AlbumAssembly().build(with: album)
+        let albumViewController = albumAssembly.build(with: album)
 
         navigationController?.pushViewController(albumViewController, animated: true)
     }
@@ -93,7 +106,7 @@ extension SearchViewController: UISearchBarDelegate {
         guard let searchTerm = searchBar.text, !searchTerm.isEmpty else {
             return
         }
-        storageManager?.saveSearchTerm(searchTerm)
-        viewModel?.searchAlbums(with: searchTerm)
+        storageManager.saveSearchTerm(searchTerm)
+        viewModel.searchAlbums(with: searchTerm)
     }
 }
