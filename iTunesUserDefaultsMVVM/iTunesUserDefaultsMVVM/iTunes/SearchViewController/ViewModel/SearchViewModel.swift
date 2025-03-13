@@ -20,8 +20,29 @@ final class SearchViewModel: SearchViewModelProtocol {
         self.storageManager = storageManager
     }
 
-    var searchHistory: [String] {
-        return storageManager.getSearchHistory()
+    private func saveSearchTerm(_ term: String) {
+        storageManager.saveSearchTerm(term)
+    }
+
+    func didTypeSearch(_ searchQuery: String) {
+        guard !searchQuery.isEmpty else {
+            return
+        }
+
+        searchAlbums(with: searchQuery)
+    }
+
+    func searchButtonClicked(with term: String?) {
+        guard let term, !term.isEmpty else {
+            return
+        }
+
+        saveSearchTerm(term)
+        searchAlbums(with: term)
+    }
+
+    func searchFromHistory(with term: String) {
+        searchAlbums(with: term)
     }
 
     func searchAlbums(with term: String) {

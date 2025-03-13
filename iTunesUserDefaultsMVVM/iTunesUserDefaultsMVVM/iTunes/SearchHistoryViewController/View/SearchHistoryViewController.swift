@@ -14,10 +14,10 @@ final class SearchHistoryViewController: UIViewController {
         return tableView
     }()
 
-    private let id = "cell"
-
     private let viewModel: SearchHistoryViewModelProtocol
     private let tableViewDataSource: SearchHistoryDataSourceProtocol
+
+    var onSelect: ((IndexPath) -> Void)?
 
     init(viewModel: SearchHistoryViewModelProtocol,
          tableViewDataSource: SearchHistoryDataSourceProtocol
@@ -53,7 +53,7 @@ final class SearchHistoryViewController: UIViewController {
 
         tableView.dataSource = tableViewDataSource
         tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: id)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
 
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -70,23 +70,6 @@ final class SearchHistoryViewController: UIViewController {
 // MARK: - UITableViewDelegate
 extension SearchHistoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-
-        let selectedTerm = viewModel.getSearchHistory(at: indexPath.row)
-
-        performSearch(for: selectedTerm)
-    }
-
-    func performSearch(for term: String) {
-        let searchAssembly = SearchAssembly()
-
-        guard let searchViewController = searchAssembly.build() as? UINavigationController,
-              let rootViewController = searchViewController.viewControllers.first as? SearchViewController else {
-            return
-        }
-
-        rootViewController.searchBar.isHidden = true
-        rootViewController.viewModel.searchAlbums(with: term)
-        navigationController?.pushViewController(rootViewController, animated: true)
+        onSelect?(indexPath)
     }
 }

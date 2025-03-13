@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 final class SearchViewController: UIViewController {
-    let searchBar: UISearchBar = {
+    private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.searchBarStyle = .minimal
         searchBar.placeholder = "Search Albums"
@@ -36,9 +36,11 @@ final class SearchViewController: UIViewController {
         return collectionView
     }()
 
-    let viewModel: SearchViewModelProtocol
+    private let viewModel: SearchViewModelProtocol
     private let storageManager: StorageManagerProtocol
     private let collectionViewDataSource: SearchDataSourceProtocol
+
+    var onSelect: ((IndexPath) -> Void)?
 
     init(viewModel: SearchViewModelProtocol,
          storageManager: StorageManagerProtocol,
@@ -89,13 +91,15 @@ final class SearchViewController: UIViewController {
 // MARK: - UICollectionViewDelegate
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        onSelect?(indexPath)
+    }
+}
 
-        let album = viewModel.getAlbum(at: indexPath.item)
-        let albumAssembly = AlbumAssembly()
-
-        let albumViewController = albumAssembly.build(with: album)
-
-        navigationController?.pushViewController(albumViewController, animated: true)
+// MARK: - SearchViewInputProtocol
+extension SearchViewController: SearchViewInputProtocol {
+    func performSearch(with term: String) {
+        searchBar.isHidden = true
+        viewModel.searchFromHistory(with: term)
     }
 }
 
@@ -103,10 +107,10 @@ extension SearchViewController: UICollectionViewDelegate {
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
-        guard let searchTerm = searchBar.text, !searchTerm.isEmpty else {
-            return
-        }
-        storageManager.saveSearchTerm(searchTerm)
-        viewModel.searchAlbums(with: searchTerm)
+        viewModel.searchButtonClicked(with: searchBar.text)
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.didTypeSearch(searchText)
     }
 }

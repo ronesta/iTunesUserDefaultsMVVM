@@ -24,18 +24,33 @@ final class SearchAssembly {
             imageLoader: imageLoader
         )
 
-        let searchViewController = SearchViewController(viewModel: viewModel,
+        let viewController = SearchViewController(viewModel: viewModel,
                                                         storageManager: storageManager,
                                                         collectionViewDataSource: collectionViewDataSource
         )
 
-        let searchNavigationController = UINavigationController(rootViewController: searchViewController)
-        let searchTabBarItem = UITabBarItem(title: "Search",
+        let navigationController = UINavigationController(rootViewController: viewController)
+        let coordinator = SearchCoordinator(viewController: viewController)
+
+        configureOnSelect(for: viewController, with: viewModel, coordinator: coordinator)
+
+        let tabBarItem = UITabBarItem(title: "Search",
                                             image: UIImage(systemName: "magnifyingglass"),
                                             tag: 0)
-        searchTabBarItem.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 16)], for: .normal)
-        searchNavigationController.tabBarItem = searchTabBarItem
+        tabBarItem.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 16)], for: .normal)
+        navigationController.tabBarItem = tabBarItem
 
-        return searchNavigationController
+        return navigationController
+    }
+
+    private func configureOnSelect(for viewController: SearchViewController,
+                                   with viewModel: SearchViewModelProtocol,
+                                   coordinator: SearchCoordinatorProtocol
+    ) {
+        viewController.onSelect = { indexPath in
+            let album = viewModel.getAlbum(at: indexPath.item)
+
+            coordinator.didSelect(album: album)
+        }
     }
 }

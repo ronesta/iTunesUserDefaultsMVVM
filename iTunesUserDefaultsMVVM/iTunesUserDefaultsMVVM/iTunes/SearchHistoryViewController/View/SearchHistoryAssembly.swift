@@ -16,18 +16,32 @@ final class SearchHistoryAssembly {
 
         let tableViewDataSource = SearchHistoryTableViewDataSource(viewModel: viewModel)
 
-        let searchHistoryViewController = SearchHistoryViewController(
+        let viewController = SearchHistoryViewController(
             viewModel: viewModel,
             tableViewDataSource: tableViewDataSource
         )
 
-        let historyNavigationController = UINavigationController(rootViewController: searchHistoryViewController)
-        let historyTabBarItem = UITabBarItem(title: "History",
+        let navigationController = UINavigationController(rootViewController: viewController)
+        let coordinator = SearchHistoryCoordinator(navigationController: navigationController)
+
+        configureOnSelect(for: viewController, with: viewModel, coordinator: coordinator)
+
+        let tabBarItem = UITabBarItem(title: "History",
                                              image: UIImage(systemName: "clock"),
                                              tag: 1)
-        historyTabBarItem.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 16)], for: .normal)
-        historyNavigationController.tabBarItem = historyTabBarItem
+        tabBarItem.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 16)], for: .normal)
+        navigationController.tabBarItem = tabBarItem
 
-        return historyNavigationController
+        return navigationController
+    }
+
+    private func configureOnSelect(for viewController: SearchHistoryViewController,
+                                   with viewModel: SearchHistoryViewModelProtocol,
+                                   coordinator: SearchHistoryCoordinatorProtocol
+    ) {
+        viewController.onSelect = { indexPath in
+            let selectedTerm = viewModel.getSearchHistory(at: indexPath.row)
+            coordinator.didSelectSearchQuery(with: selectedTerm)
+        }
     }
 }
