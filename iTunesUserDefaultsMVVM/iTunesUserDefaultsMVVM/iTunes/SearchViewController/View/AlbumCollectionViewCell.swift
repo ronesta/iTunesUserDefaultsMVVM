@@ -16,12 +16,14 @@ final class AlbumCollectionViewCell: UICollectionViewCell {
         image.layer.cornerRadius = 15
         image.clipsToBounds = true
         image.contentMode = .scaleToFill
+        image.accessibilityIdentifier = "albumImageView"
         return image
     }()
 
     private let albumNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.accessibilityIdentifier = "albumNameLabel"
         return label
     }()
 
@@ -29,6 +31,7 @@ final class AlbumCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 18)
         label.textColor = .systemGray
+        label.accessibilityIdentifier = "artistNameLabel"
         return label
     }()
 

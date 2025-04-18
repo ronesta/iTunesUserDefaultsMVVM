@@ -11,7 +11,7 @@ struct PostAlbums: Codable {
     let results: [Album]
 }
 
-struct Album: Codable {
+struct Album: Codable, Equatable {
     let artistId: Int
     let artistName: String
     let collectionName: String
