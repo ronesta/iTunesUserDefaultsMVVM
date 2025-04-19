@@ -9,6 +9,7 @@ import Foundation
 
 protocol SearchViewModelProtocol {
     var albums: Observable<[Album]> { get set }
+    var errorMessage: Observable<String?> { get set }
 
     func didTypeSearch(_ searchQuery: String)
     func searchButtonClicked(with term: String?)

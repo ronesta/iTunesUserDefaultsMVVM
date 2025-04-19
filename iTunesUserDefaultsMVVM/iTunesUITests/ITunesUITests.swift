@@ -23,7 +23,7 @@ final class ITunesUITests: XCTestCase {
         XCTAssertTrue(searchBar.exists)
 
         searchBar.tap()
-        searchBar.typeText("Test Album")
+        searchBar.typeText("$")
 
         let keyboardPredicate = NSPredicate(format: "exists == false")
 

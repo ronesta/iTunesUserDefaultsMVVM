@@ -85,6 +85,21 @@ final class SearchViewController: UIViewController {
                 self?.collectionView.reloadData()
             }
         }
+
+        viewModel.errorMessage.bind { [weak self] message in
+            guard let self,
+                  let message,
+                  !message.isEmpty else {
+                return
+            }
+
+            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+
+            DispatchQueue.main.async {
+                self.present(alert, animated: true)
+            }
+        }
     }
 }
 

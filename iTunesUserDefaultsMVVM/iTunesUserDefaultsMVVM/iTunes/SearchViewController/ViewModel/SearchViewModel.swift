@@ -9,6 +9,7 @@ import Foundation
 
 final class SearchViewModel: SearchViewModelProtocol {
     var albums: Observable<[Album]> = Observable([])
+    var errorMessage: Observable<String?> = Observable(nil)
 
     private let iTunesService: ITunesServiceProtocol
     private let storageManager: StorageManagerProtocol
@@ -54,12 +55,11 @@ final class SearchViewModel: SearchViewModelProtocol {
         iTunesService.loadAlbums(albumName: term) { [weak self] result in
             switch result {
             case .success(let albums):
-                DispatchQueue.main.async {
-                    self?.albums.value = albums.sorted { $0.collectionName < $1.collectionName }
-                    self?.storageManager.saveAlbums(albums, for: term)
-                    print("Successfully loaded \(albums.count) albums.")
-                }
+                self?.albums.value = albums.sorted { $0.collectionName < $1.collectionName }
+                self?.storageManager.saveAlbums(albums, for: term)
+                print("Successfully loaded \(albums.count) albums.")
             case .failure(let error):
+                self?.errorMessage.value = error.localizedDescription
                 print("Failed to load images with error: \(error.localizedDescription)")
             }
         }
