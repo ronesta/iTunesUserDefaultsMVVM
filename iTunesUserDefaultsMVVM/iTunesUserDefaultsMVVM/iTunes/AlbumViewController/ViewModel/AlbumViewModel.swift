@@ -38,8 +38,4 @@ final class AlbumViewModel: AlbumViewModelProtocol {
             }
         }
     }
-
-    func fetchAlbumImage(completion: @escaping (UIImage?) -> Void) {
-        imageLoader.loadImage(from: album.artworkUrl100, completion: completion)
-    }
 }
