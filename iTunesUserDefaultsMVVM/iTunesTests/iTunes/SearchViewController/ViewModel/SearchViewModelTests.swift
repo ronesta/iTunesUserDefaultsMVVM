@@ -29,31 +29,42 @@ final class SearchViewModelTests: XCTestCase {
         super.tearDown()
     }
 
-    func testDidTypeSearchQueryCallsService() {
+    func test_GivenSearchTerm_WhenDidTypeSearch_ThenServiceReceivesTerm() {
+        // Given
         let term = "SomeAlbum"
+
+        // When
         viewModel.didTypeSearch(term)
 
-        XCTAssertEqual(mockITunesService.albumName, term)
+        // Then
+        XCTAssertEqual(mockITunesService.loadAlbumsArgsTerms.first, term)
     }
 
-    func testSearchButtonClickedSavesSearchTerm() {
+    func test_GivenSearchTerm_WhenSearchButtonClicked_ThenSearchTermIsSaved() {
+        // Given
         let term = "SomeAlbum"
+
+        // When
         viewModel.searchButtonClicked(with: term)
 
-        XCTAssertTrue(mockStorageManager.searchHistory.contains(term))
-        XCTAssertEqual(mockITunesService.albumName, term)
+        // Then
+        XCTAssertEqual(mockStorageManager.searchHistory.first, term)
     }
 
-    func testSearchFromHistoryLoadsAlbums() {
+    func test_GivenSearchTerm_WhenSearchFromHistory_ThenServiceReceivesTerm() {
+        // Given
         let term = "SomeAlbum"
+
+        // When
         viewModel.searchFromHistory(with: term)
 
-        XCTAssertEqual(mockITunesService.albumName, term)
+        // Then
+        XCTAssertEqual(mockITunesService.loadAlbumsArgsTerms.first, term)
     }
 
-    func testSearchAlbumsWithSavedAlbums() {
+    func test_GivenSavedAlbums_WhenSearchAlbums_ThenAlbumsAreDisplayedFromStorage() {
+        // Given
         let term = "SavedAlbums"
-
         let albums = [
             Album(artistId: 111051,
                   artistName: "Eminem",
@@ -70,15 +81,18 @@ final class SearchViewModelTests: XCTestCase {
         ]
 
         mockStorageManager.saveAlbums(albums, for: term)
+
+        // When
         viewModel.searchAlbums(with: term)
 
+        // Then
         XCTAssertEqual(viewModel.albums.value, albums)
-        XCTAssertNil(mockITunesService.albumName)
+        XCTAssertEqual(mockITunesService.loadAlbumsCallCount, 0)
     }
 
-    func testSearchAlbumsWithNewAlbums() {
+    func test_GivenNewAlbums_WhenSearchAlbums_ThenAlbumsAreFetchedAndDisplayed() {
+        // Given
         let term = "Eminem"
-
         let albums = [
             Album(artistId: 111051,
                   artistName: "Eminem",
@@ -88,11 +102,15 @@ final class SearchViewModelTests: XCTestCase {
                  )
         ]
 
-        mockITunesService.result = .success(albums)
+        mockITunesService.stubbedAlbumsResult = .success(albums)
+
+        // When
         viewModel.searchAlbums(with: term)
 
+        // Then
         XCTAssertEqual(viewModel.albums.value, albums)
-
+        XCTAssertEqual(mockITunesService.loadAlbumsCallCount, 1)
+        XCTAssertEqual(mockITunesService.loadAlbumsArgsTerms.first, term)
         let savedAlbums = mockStorageManager.loadAlbums(for: term)
         XCTAssertEqual(savedAlbums, albums)
     }
