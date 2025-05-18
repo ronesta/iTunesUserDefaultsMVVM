@@ -10,6 +10,16 @@ import Foundation
 final class ITunesService: ITunesServiceProtocol {
     private var counter = 1
 
+    private let urlSession: URLSessionProtocol
+    private let dispatchQueue: DispatchQueueProtocol
+
+    init(urlSession: URLSessionProtocol = URLSession.shared,
+         dispatchQueue: DispatchQueueProtocol = DispatchQueue.main
+    ) {
+        self.urlSession = urlSession
+        self.dispatchQueue = dispatchQueue
+    }
+
     func loadAlbums(albumName: String, completion: @escaping (Result<[Album], Error>) -> Void) {
         let baseURL = "https://itunes.apple.com/search"
         let term = albumName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -21,10 +31,10 @@ final class ITunesService: ITunesServiceProtocol {
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, _, error in
+        urlSession.dataTask(with: url) { data, _, error in
             if let error {
                 print("Error: \(error.localizedDescription)")
-                DispatchQueue.main.async {
+                self.dispatchQueue.async  {
                     completion(.failure(error))
                 }
                 return
@@ -32,7 +42,7 @@ final class ITunesService: ITunesServiceProtocol {
 
             guard let data else {
                 print("No data")
-                DispatchQueue.main.async {
+                self.dispatchQueue.async  {
                     completion(.failure(NetworkError.noData))
                 }
                 return
@@ -40,14 +50,14 @@ final class ITunesService: ITunesServiceProtocol {
 
             do {
                 let albums = try JSONDecoder().decode(PostAlbums.self, from: data).results
-                DispatchQueue.main.async {
+                self.dispatchQueue.async  {
                     completion(.success(albums))
                     print("Load data \(self.counter)")
                     self.counter += 1
                 }
             } catch {
                 print("Decoding error: \(error.localizedDescription)")
-                DispatchQueue.main.async {
+                self.dispatchQueue.async  {
                     completion(.failure(error))
                 }
             }

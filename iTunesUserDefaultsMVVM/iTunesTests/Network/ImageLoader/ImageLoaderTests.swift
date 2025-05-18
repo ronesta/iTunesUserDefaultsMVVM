@@ -9,39 +9,93 @@ import XCTest
 @testable import iTunesUserDefaultsMVVM
 
 final class ImageLoaderTests: XCTestCase {
-    private var imageLoader: MockImageLoader!
+    private var imageLoader: ImageLoader!
+    private var mockStorageManager: MockStorageManager!
+    private var mockURLSession: MockURLSession!
+    private var mockDispatchQueue: MockDispatchQueue!
 
     override func setUp() {
         super.setUp()
-        imageLoader = MockImageLoader()
+        mockStorageManager = MockStorageManager()
+        mockURLSession = MockURLSession()
+        mockDispatchQueue = MockDispatchQueue()
+        imageLoader = ImageLoader(
+            storageManager: mockStorageManager,
+            urlSession: mockURLSession,
+            dispatchQueue: mockDispatchQueue
+        )
     }
 
     override func tearDown() {
         imageLoader = nil
+        mockStorageManager = nil
+        mockURLSession = nil
+        mockDispatchQueue = nil
         super.tearDown()
     }
 
-    func testLoadImageSuccess() {
-        let testImage = UIImage(systemName: "person.fill")!
-        imageLoader.mockImage = testImage
-        imageLoader.shouldReturnError = false
+    func testGivenImageInStorage_WhenLoadImage_ThenReturnsImageFromStorage() {
+        // Given
+        let urlString = "https://example.com/test.png"
+        let testImage = UIImage(systemName: "star")!
+        let imageData = testImage.pngData()!
+        let key = urlString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? urlString
+        mockStorageManager.saveImage(imageData, key: key)
 
-        imageLoader.loadImage(from: "test_url") { image in
+        // When
+        imageLoader.loadImage(from: urlString) { image in
+            // Then
             XCTAssertNotNil(image)
-            XCTAssertEqual(image, testImage)
         }
     }
 
-    func testLoadImageFailure() {
-        imageLoader.shouldReturnError = true
+    func testGivenImageNotInStorage_WhenLoadImage_ThenLoadsImageFromNetworkAndCachesIt() {
+        // Given
+        let urlString = "https://example.com/test.png"
+        let testImage = UIImage(systemName: "star")!
+        let imageData = testImage.pngData()!
+        let key = urlString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? urlString
+        mockURLSession.data = imageData
 
-        imageLoader.loadImage(from: "test_url") { image in
+        // When
+        imageLoader.loadImage(from: urlString) { image in
+            // Then
+            XCTAssertNotNil(image)
+            XCTAssertEqual(self.mockStorageManager.images[key], imageData)
+        }
+    }
+
+    func testGivenInvalidURL_WhenLoadImage_ThenReturnsNil() {
+        // Given
+        let urlString = "not-a url"
+
+        // When
+        imageLoader.loadImage(from: urlString) { image in
+            // Then
             XCTAssertNil(image)
         }
     }
 
-    func testLoadImageInvalidURL() {
-        imageLoader.loadImage(from: "") { image in
+    func testGivenNetworkError_WhenLoadImage_ThenReturnsNil() {
+        // Given
+        let urlString = "http://example.com/test3.png"
+        mockURLSession.error = NSError(domain: "test", code: 1)
+
+        // When
+        imageLoader.loadImage(from: urlString) { image in
+            // Then
+            XCTAssertNil(image)
+        }
+    }
+
+    func testGivenInvalidImageData_WhenLoadImage_ThenReturnsNil() {
+        // Given
+        let urlString = "http://example.com/test4.png"
+        mockURLSession.data = Data()
+
+        // When
+        imageLoader.loadImage(from: urlString) { image in
+            // Then
             XCTAssertNil(image)
         }
     }
