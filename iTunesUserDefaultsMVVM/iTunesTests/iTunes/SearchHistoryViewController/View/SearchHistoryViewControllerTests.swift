@@ -30,24 +30,30 @@ final class SearchHistoryViewControllerTests: XCTestCase {
         super.tearDown()
     }
 
-    func testViewWillAppearUpdatesSearchHistory() {
+    func test_GivenViewController_WhenViewWillAppear_ThenUpdatesSearchHistory() {
+        // Given viewController
+
+        // When
         viewController.viewWillAppear(false)
 
+        // Then
         XCTAssertTrue(mockViewModel.updateSearchHistoryCalled)
     }
 
-    func testBindViewModelReloadsTableView() {
+    func test_GivenSearchHistoryChange_WhenBindingViewModel_ThenReloadsTableView() {
+        // Given
         let tableView = viewController.view.subviews.compactMap { $0 as? UITableView }.first!
-        
-        let exp = expectation(description: "reloadData called")
+        let expectation = expectation(description: "reloadData called")
 
+        // When
         mockViewModel.searchHistory.value = ["test"]
 
+        // Then
         DispatchQueue.main.async {
             XCTAssertEqual(tableView.numberOfRows(inSection: 0), 1)
-            exp.fulfill()
+            expectation.fulfill()
         }
-        
-        wait(for: [exp], timeout: 1)
+
+        wait(for: [expectation], timeout: 1)
     }
 }

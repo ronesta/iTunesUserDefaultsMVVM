@@ -31,19 +31,26 @@ final class SearchHistoryViewControllerSnapshotTests: XCTestCase {
         super.tearDown()
     }
 
-    func testDefaultAppearance() {
+    func test_GivenEmptySearchHistory_WhenViewLoaded_ThenViewControllerAppearanceMatchesSnapshot() {
+        // Given
         let navigationController = UINavigationController(rootViewController: viewController)
 
+        // When
+        viewController.loadViewIfNeeded()
+
+        // Then
         assertSnapshot(of: navigationController, as: .image)
     }
 
-    func testAppearanceWithUpdatedData() {
+    func test_GivenSearchHistory_WhenUpdatingData_ThenShowsUpdatedAppearance() {
+        // Given
         let searchHistory = ["Search1", "Search2"]
-
         let navigationController = UINavigationController(rootViewController: viewController)
 
+        // When
         mockViewModel.searchHistory.value = searchHistory
 
+        // Then
         assertSnapshot(of: navigationController, as: .image)
     }
 }

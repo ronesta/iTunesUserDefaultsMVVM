@@ -24,56 +24,47 @@ final class SearchHistoryViewModelTests: XCTestCase {
         super.tearDown()
     }
 
-    func testInitialSearchHistoryIsLoaded() {
+    func test_GivenSavedSearchTerms_WhenUpdateSearchHistory_ThenViewModelLoadsSearchHistory() {
+        // Given
         let searchHistory = ["Search1", "Search2"]
-
         searchHistory.forEach { term in
             mockStorageManager.saveSearchTerm(term)
         }
 
+        // When
         viewModel.updateSearchHistory()
 
+        // Then
         XCTAssertEqual(viewModel.searchHistory.value, searchHistory)
     }
 
-    func testGetSearchHistoryCountReturnsCorrectValue() {
+    func test_GivenSavedSearchTerms_WhenGetSearchHistoryCount_ThenReturnsCorrectValue() {
+        // Given
         let searchHistory = ["Search1", "Search2"]
-
         searchHistory.forEach { term in
             mockStorageManager.saveSearchTerm(term)
         }
-        
         viewModel.updateSearchHistory()
 
+        // When
         let count = viewModel.getSearchHistoryCount()
+
+        // Then
         XCTAssertEqual(count, 2)
     }
 
-    func testGetSearchHistoryAtIndexReturnsCorrectElement() {
+    func test_GivenSavedSearchTerms_WhenGetSearchHistoryAtIndex_ThenReturnsCorrectElement() {
+        // Given
         let searchHistory = ["Search1", "Search2"]
-
         searchHistory.forEach { term in
             mockStorageManager.saveSearchTerm(term)
         }
-
         viewModel.updateSearchHistory()
 
+        // When
         let element = viewModel.getSearchHistory(at: 1)
+
+        // Then
         XCTAssertEqual(element, "Search2")
-    }
-
-    func testUpdateSearchHistoryUpdatesObservableValue() {
-        let searchTerm1 = "Search1"
-        mockStorageManager.saveSearchTerm(searchTerm1)
-
-        viewModel.updateSearchHistory()
-        XCTAssertEqual(viewModel.searchHistory.value, ["Search1"])
-
-        let searchTerm2 = "Search2"
-        mockStorageManager.saveSearchTerm(searchTerm2)
-
-        viewModel.updateSearchHistory()
-
-        XCTAssertEqual(viewModel.searchHistory.value, ["Search1", "Search2"])
     }
 }

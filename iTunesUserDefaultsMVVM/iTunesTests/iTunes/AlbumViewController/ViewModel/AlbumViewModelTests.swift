@@ -34,38 +34,62 @@ final class AlbumViewModelTests: XCTestCase {
         super.tearDown()
     }
 
-    func testAlbumNameIsSetCorrectly() {
-        XCTAssertEqual(viewModel.albumName.value, mockAlbum.collectionName)
+    func test_GivenViewModel_WhenInitialized_ThenAlbumNameIsSetCorrectly() {
+        // Given
+        let expectedAlbumName = mockAlbum.collectionName
+
+        // When
+        let actualAlbumName = viewModel.albumName.value
+
+        // Then
+        XCTAssertEqual(actualAlbumName, expectedAlbumName)
     }
 
-    func testArtistNameIsSetCorrectly() {
-        XCTAssertEqual(viewModel.artistName.value, mockAlbum.artistName)
+    func test_GivenViewModel_WhenInitialized_ThenArtistNameIsSetCorrectly() {
+        // Given
+        let expectedArtistName = mockAlbum.artistName
+
+        // When
+        let actualArtistName = viewModel.artistName.value
+
+        // Then
+        XCTAssertEqual(actualArtistName, expectedArtistName)
     }
 
-    func testCollectionPriceIsSetCorrectly() {
-        XCTAssertEqual(viewModel.collectionPrice.value, "\(mockAlbum.collectionPrice) $")
+    func test_GivenViewModel_WhenInitialized_ThenCollectionPriceIsSetCorrectly() {
+        // Given
+        let expectedCollectionPrice = "\(mockAlbum.collectionPrice) $"
+
+        // When
+        let actualCollectionPrice = viewModel.collectionPrice.value
+
+        // Then
+        XCTAssertEqual(actualCollectionPrice, expectedCollectionPrice)
     }
 
-    func testAlbumImageOnSuccessLoadsImage() {
+    func test_GivenImageLoaderReturnsImage_WhenViewModelLoadsImage_ThenAlbumImageIsSet() {
+        // Given
         let expectedImage = UIImage(systemName: "checkmark.diamond")
-
         mockImageLoader.mockImage = expectedImage
-        viewModel = AlbumViewModel(imageLoader: mockImageLoader,
-                                   album: mockAlbum
-        )
 
+        // When
+        viewModel = AlbumViewModel(imageLoader: mockImageLoader, album: mockAlbum)
         waitForAsyncTasksToComplete()
 
-        XCTAssertEqual(self.viewModel.albumImage.value, expectedImage)
-
+        // Then
+        XCTAssertEqual(viewModel.albumImage.value, expectedImage)
     }
 
-    func testAlbumImageOnErrorReturnsNil() {
+    func test_GivenImageLoaderReturnsError_WhenViewModelLoadsImage_ThenAlbumImageIsNil() {
+        // Given
         mockImageLoader.shouldReturnError = true
 
+        // When
+        viewModel = AlbumViewModel(imageLoader: mockImageLoader, album: mockAlbum)
         waitForAsyncTasksToComplete()
 
-        XCTAssertNil(self.viewModel.albumImage.value)
+        // Then
+        XCTAssertNil(viewModel.albumImage.value)
     }
 
     private func waitForAsyncTasksToComplete() {
