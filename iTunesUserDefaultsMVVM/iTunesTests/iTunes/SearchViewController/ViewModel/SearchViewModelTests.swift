@@ -51,15 +51,32 @@ final class SearchViewModelTests: XCTestCase {
         XCTAssertEqual(mockStorageManager.searchHistory.first, term)
     }
 
-    func test_GivenSearchTerm_WhenSearchFromHistory_ThenServiceReceivesTerm() {
+    func test_GivenSavedAlbums_WhenSearchFromHistory_ThenAlbumsAreDisplayedFromStorage() {
         // Given
         let term = "SomeAlbum"
+        let albums = [
+            Album(artistId: 111051,
+                  artistName: "Eminem",
+                  collectionName: "The Eminem Show",
+                  artworkUrl100: "url_to_image",
+                  collectionPrice: 10.99
+                 ),
+            Album(artistId: 20044,
+                  artistName: "Eminem",
+                  collectionName: "Levitating",
+                  artworkUrl100: "url_to_image",
+                  collectionPrice: 9.99
+                 )
+        ]
+
+        mockStorageManager.saveAlbums(albums, for: term)
 
         // When
         viewModel.searchFromHistory(with: term)
 
         // Then
-        XCTAssertEqual(mockITunesService.loadAlbumsArgsTerms.first, term)
+        XCTAssertEqual(viewModel.albums.value, albums)
+        XCTAssertEqual(mockITunesService.loadAlbumsCallCount, 0)
     }
 
     func test_GivenSavedAlbums_WhenSearchAlbums_ThenAlbumsAreDisplayedFromStorage() {

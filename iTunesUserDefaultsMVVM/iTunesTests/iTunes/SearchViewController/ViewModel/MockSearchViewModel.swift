@@ -9,23 +9,31 @@ import Foundation
 @testable import iTunesUserDefaultsMVVM
 
 final class MockSearchViewModel: SearchViewModelProtocol {
+    private(set) var didTypeSearchCallCount = 0
+    private(set) var didTypeSearchArgsTexts = [String]()
+
+    private(set) var searchButtonClickedCallCount = 0
+    private(set) var searchButtonClickedArgsTerms = [String?]()
+
+    private(set) var searchFromHistoryCallCount = 0
+    private(set) var searchFromHistoryArgsTerms = [String]()
+
     var albums: Observable<[Album]> = Observable([])
     var errorMessage: Observable<String?> = Observable(nil)
-    
-    var searchButtonClickedTerm: String?
-    var didTypeSearchText: String?
-    var searchFromHistoryTerm: String?
 
     func didTypeSearch(_ text: String) {
-        didTypeSearchText = text
+        didTypeSearchCallCount += 1
+        didTypeSearchArgsTexts.append(text)
     }
 
     func searchButtonClicked(with text: String?) {
-        searchButtonClickedTerm = text
+        searchButtonClickedCallCount += 1
+        searchButtonClickedArgsTerms.append(text)
     }
-    
+
     func searchFromHistory(with term: String) {
-        searchFromHistoryTerm = term
+        searchFromHistoryCallCount += 1
+        searchFromHistoryArgsTerms.append(term)
     }
 
     func getAlbumsCount() -> Int {
@@ -35,5 +43,4 @@ final class MockSearchViewModel: SearchViewModelProtocol {
     func getAlbum(at index: Int) -> Album {
         albums.value[index]
     }
-
 }
